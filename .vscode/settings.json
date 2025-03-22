@@ -1,0 +1,8 @@
+{
+    "launch": {
+        "configurations": [],
+        "compounds": []
+    },
+    "C_Cpp.autocomplete": "disabled",
+    "cody.suggestions.mode": "off"
+}
