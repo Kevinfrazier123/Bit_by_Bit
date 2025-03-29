@@ -1,10 +1,9 @@
 // routes for user authentication (signup, login, logout) using JWT.
 import express from "express";
+import { register } from "../controllers/auth.js";
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-    res.send("Hello thi is auth endpoint");
-});
+router.post("/register", register)
 
 export default router;
