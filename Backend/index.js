@@ -7,7 +7,7 @@ import authRoute from "./routes/auth.js";
 import usersRoute from "./routes/users.js";
 import commentsRoute from "./routes/comments.js";
 import postsRoute from "./routes/posts.js";
-
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 const app = express();
@@ -34,11 +34,13 @@ mongoose.connection.on("disconnected", () => {
 
   //middlewares, these are the different routes
   // important to add this 
-  app.use(express.json())
+  app.use(cookieParser());
+  app.use(express.json());
   app.use("/auth", authRoute);
   app.use("/users", usersRoute);
   app.use("/comments", commentsRoute);
   app.use("/posts", postsRoute);
+  
   //app.use(/..., .....);
 
 app.listen(8800, () => {
