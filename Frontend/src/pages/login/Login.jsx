@@ -1,11 +1,14 @@
-import React, { useContext, useState } from "react";
 import axios from "axios";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import "./login.css";
 
 const Login = () => {
-  const [credentials, setCredentials] = useState({ email: "", password: "" });
+  const [credentials, setCredentials] = useState({
+    username: "",
+    password: "",
+  });
   const { loading, error, dispatch } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -20,36 +23,51 @@ const Login = () => {
     e.preventDefault();
     dispatch({ type: "LOGIN_START" });
     try {
-      const res = await axios.post("/auth/login", credentials);
-      dispatch({ type: "LOGIN_SUCCESS", payload: res.data.details });
-      navigate("/");
+      // send the credentials and include cookies
+      const res = await axios.post(
+        "/auth/login",
+        credentials,
+        { withCredentials: true }
+      );
+
+      console.log("login response:", res.data);
+      // pick the correct payload field:
+      const userPayload =
+        res.data.details ?? res.data.user ?? res.data;
+      dispatch({ type: "LOGIN_SUCCESS", payload: userPayload });
+
+      navigate("/forum");
     } catch (err) {
-      dispatch({ type: "LOGIN_FAILURE", payload: err.response.data });
+      console.error("login error:", err);
+      const payload = err.response?.data || { message: err.message };
+      dispatch({ type: "LOGIN_FAILURE", payload });
     }
   };
 
   return (
     <div className="loginPage">
-      {/* Animated background container */}
       <div className="animatedBackground"></div>
-      
       <div className="loginBox">
         <h2>Sign In</h2>
-        
-        <label htmlFor="email" className="lLabel">Email</label>
+
+        <label htmlFor="username" className="lLabel">
+          Username
+        </label>
         <input
-          type="email"
-          id="email"
-          placeholder="Value"
+          type="text"
+          id="username"
+          placeholder="Username"
           className="lInput"
           onChange={handleChange}
         />
 
-        <label htmlFor="password" className="lLabel">Password</label>
+        <label htmlFor="password" className="lLabel">
+          Password
+        </label>
         <input
           type="password"
           id="password"
-          placeholder="Value"
+          placeholder="Password"
           className="lInput"
           onChange={handleChange}
         />
@@ -62,13 +80,11 @@ const Login = () => {
           Sign In
         </button>
 
-        {/* Show error message if one exists */}
         {error && <span className="errorMessage">{error.message}</span>}
 
         <div className="forgotPassword">
           <a href="/forgot-password">Forgot password?</a>
-      </div>
-
+        </div>
         <div className="signUp">
           <span>Don’t have an account?</span>
           <a href="/register"> Sign Up</a>

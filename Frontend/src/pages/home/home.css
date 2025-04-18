@@ -1,12 +1,52 @@
-.homeContainer{
-    margin-top: 50px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 30px;
-  }
-  
-  .homeTitle{
-    width: 1024px;
-    font-size: 20px;
-  }
+
+.home {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff; /* White background */
+  height: 60px;
+  padding: 0 20px;        /* Horizontal spacing */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Logo area (left side) */
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 40px;   /* Adjust as needed */
+  margin-right: 8px;
+}
+
+.logo a {
+  text-decoration: none;
+  color: #333;    /* Dark text color */
+  font-weight: 600;
+  font-size: 18px;
+}
+
+/* Navigation list (right side) */
+.navLinks {
+  display: flex;
+  list-style: none;
+  gap: 20px;      /* Space between links */
+  margin: 0;
+  padding: 0;
+}
+
+/* Each nav item */
+.navLinks li a {
+  display: block;
+  padding: 8px 12px;
+  border-radius: 4px;
+  color: #333;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+/* Hover effect for nav links */
+.navLinks li a:hover {
+  background-color: #f2f2f2; /* Light gray hover background */
+}

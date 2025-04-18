@@ -4,5 +4,11 @@
         "compounds": []
     },
     "C_Cpp.autocomplete": "disabled",
-    "cody.suggestions.mode": "off"
+    "cody.suggestions.mode": "off",
+    "mdb.presetConnections": [
+        {
+            "name": "Preset Connection",
+            "connectionString": "mongodb://localhost:27017"
+        }
+    ]
 }

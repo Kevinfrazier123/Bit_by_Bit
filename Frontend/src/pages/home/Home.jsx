@@ -1,21 +1,22 @@
-
-
-import "./home.css";
+// src/components/Header.jsx
+import React from "react";
+import { Link } from "react-router-dom";
+import "./home.css"; // optional for styling
 
 const Home = () => {
   return (
-    <div>
-     
-      <div className="homeContainer">
-       
-        <h1 className="homeTitle"> This is the Homepage</h1>
+    <nav className="home">
+      {/* Logo or title */}
+      <div className="logo">
         
-        <h1 className="homeTitle">Hello world</h1>
-       
-       
-     
       </div>
-    </div>
+      {/* Navigation links */}
+      <ul className="navLinks">
+        <li><Link to="/about">About Us</Link></li>
+        <li><Link to="/forum">Forum</Link></li>
+        <li><Link to="/contact">Contact Us</Link></li>
+      </ul>
+    </nav>
   );
 };
 
