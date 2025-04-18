@@ -2,6 +2,7 @@
 // connect to your database, and set up middleware/routes.
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import mongoose from "mongoose";
 import authRoute from "./routes/auth.js";
 import usersRoute from "./routes/users.js";
@@ -12,6 +13,10 @@ import cookieParser from "cookie-parser";
 dotenv.config();
 const app = express();
 
+app.use(cors({
+  origin: "http://localhost:3000",   // your React dev URL
+  credentials: true,                 // allow cookies to be sent
+}));
 
 const connect = async () => {
 try {
@@ -30,7 +35,8 @@ mongoose.connection.on("disconnected", () => {
   });
 
   connect();
-
+  
+ 
 
   //middlewares, these are the different routes
   // important to add this 
@@ -42,6 +48,7 @@ mongoose.connection.on("disconnected", () => {
   app.use("/posts", postsRoute);
   
   //app.use(/..., .....);
+  
 
 app.listen(8800, () => {
     console.log("Connected to Backend")
