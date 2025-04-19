@@ -1,0 +1,105 @@
+/* src/components/aboutUs/AboutUs.css */
+
+/* Container */
+.about-us-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    font-family: 'Segoe UI', sans-serif;
+    color: #333;
+  }
+  
+  /* Hero Banner */
+  .hero {
+    position: relative;
+    height: 50vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 3rem;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0,0,0,0.4);
+  }
+  .hero h1,
+  .hero p {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: 3rem;
+    color: #fff;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.7);
+  }
+  .hero p {
+    font-size: 1.2rem;
+    color: #eee;
+    margin-top: 0.5rem;
+  }
+  
+  /* Mission Section */
+  .mission {
+    margin-bottom: 3rem;
+  }
+  .mission h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 2px solid #ddd;
+    display: inline-block;
+  }
+  .mission p {
+    line-height: 1.6;
+    margin-top: 0.5rem;
+  }
+
+  /* FAQ Section */
+.faq {
+    margin: 3rem 0;
+  }
+  .faq h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #ddd;
+    display: inline-block;
+  }
+  .faq-list {
+    margin-top: 1rem;
+  }
+  .faq-item {
+    border-bottom: 1px solid #eee;
+    padding: 0.75rem 0;
+  }
+  .faq-question {
+    width: 100%;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 1.1rem;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .faq-toggle {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+  .faq-answer {
+    margin-top: 0.5rem;
+    line-height: 1.6;
+    color: #555;
+  }
+
+  
