@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import { createError } from "../utils/error.js";
 
 export const updateUser = async (req,res,next)=>{
   try {
@@ -36,3 +37,26 @@ export const getUsers = async (req,res,next)=>{
     next(err);
   }
 }
+
+// PUT /users/:id/profile-pic
+export const updateProfilePic = async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    // only the user themselves (or an admin) can update
+    if (req.user.id !== userId && !req.user.isAdmin) {
+      return next(createError(403, "Not authorized"));
+    }
+
+    const user = await User.findById(userId);
+    if (!user) return next(createError(404, "User not found"));
+
+    // multer put the file on disk and set req.file.filename
+    user.profilePic = `/uploads/${req.file.filename}`;
+    const updated = await user.save();
+    // remove sensitive fields
+    const { password, ...safe } = updated._doc;
+    res.status(200).json(safe);
+  } catch (err) {
+    next(err);
+  }
+};

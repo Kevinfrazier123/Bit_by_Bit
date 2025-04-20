@@ -1,0 +1,48 @@
+.active-users {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+
+  /* push it down from the top */
+  margin-top: 2rem;
+}
+
+.active-users h3 {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+}
+
+.active-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.active-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #2ecc71;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
+
+.active-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.5rem;
+}
+
+.active-name {
+  font-size: 0.9rem;
+  color: #333;
+}

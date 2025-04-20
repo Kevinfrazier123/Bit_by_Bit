@@ -20,6 +20,10 @@ const UserSchema = new mongoose.Schema({
         type:Boolean,
         default: false,
     },
+
+    profilePic: { type: String, default: null },
+
+
 },
 { timestamp: true } //give created add and updated at times
 );
