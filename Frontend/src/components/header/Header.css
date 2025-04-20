@@ -1,0 +1,93 @@
+/* Frontend/src/components/header/Header.css */
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #2e7d32;
+  padding: 0.75rem 2rem;
+}
+
+/* left side: home icon + logo */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.home-link {
+  color: #fff;
+  text-decoration: none;
+}
+
+.home-icon {
+  font-size: 1.25rem;
+  vertical-align: middle;
+}
+
+.logo {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+/* center nav: style links as white‑border buttons */
+.main-nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-item {
+  display: inline-block;
+  background: #fff;            /* always white */
+  color: #2e7d32;              /* your green text */
+  border: 1px solid #fff;      /* white border matching the button style */
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.nav-item:hover {
+  background: #f0f0f0;         /* subtle hover */
+  color: #2e7d32;
+}
+
+/* right‑side controls: create, avatar, username, logout */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-controls .btn {
+  background-color: #fff;
+  color: #2e7d32;
+  border: 1px solid #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.header-controls .btn:hover {
+  background-color: #f0f0f0;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-left: 0.5rem; /* tighten up */
+}
+
+.username {
+  color: #fff;
+  font-size: 1.1rem;    /* larger */
+  font-weight: 600;
+  margin-left: 0.25rem;
+}

@@ -1,49 +1,76 @@
-import { useState, useContext } from "react";
-import { FaRegHeart, FaHeart } from "react-icons/fa";
-import api from "../../api";
+import React, { useState, useContext } from "react";
+import { FaRegHeart, FaHeart, FaRegComment } from "react-icons/fa";
+import { FiX } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
-import "./Post.css";              // optional extra styling
+import "./Post.css";
 
 export default function Post({ post, refresh }) {
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [liked, setLiked] = useState(post.likes.includes(user?._id));
   const [likeCount, setLikeCount] = useState(post.likes.length);
 
-  const toggleLike = async () => {
-    await api.put(`/posts/${post._id}/like`);
+  const toggleLike = async (e) => {
+    e.stopPropagation();
+    const { data } = await axios.put(`/posts/${post._id}/like`);
     setLiked(!liked);
-    setLikeCount(liked ? likeCount - 1 : likeCount + 1);
+    setLikeCount(data.likes);
   };
 
-  const addComment = async () => {
-    const text = prompt("Your comment:");
-    if (!text) return;
-    await api.post(`/posts/${post._id}/comment`, { text });
-    refresh();              // re‑fetch list so counts update
+  const deletePost = async (e) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this post?")) return;
+    await axios.delete(`/posts/${post._id}`);
+    refresh();
   };
 
   return (
-    <article className="post">
+    <article className="post" onClick={() => navigate(`/posts/${post._id}`)}>
+      <h3 className="post-title">{post.title}</h3>
+
       {post.image && (
-        <img src={post.image} alt="Scam example" className="post-image" />
+        <img
+          src={post.image}
+          alt={post.description || "Post image"}
+          className="post-image"
+        />
       )}
 
       <div className="post-content">
         <p>{post.description}</p>
-        <small>
-          Type: <strong>{post.scamType}</strong> &nbsp;|&nbsp;{" "}
-          {post.hashtags.map((h) => "#" + h).join(" ")}
-        </small>
+      </div>
+
+      <div className="post-meta-row">
+        <span className={`post-type type-${post.scamType.toLowerCase()}`}>
+          {post.scamType}
+        </span>
+        {post.hashtags.length > 0 && (
+          <span className="post-hashtags">
+            {post.hashtags.map((h) => `#${h}`).join(" ")}
+          </span>
+        )}
       </div>
 
       <div className="post-interactions">
         <span className="like-btn" onClick={toggleLike}>
           {liked ? <FaHeart color="red" /> : <FaRegHeart />} {likeCount}
         </span>
-        <span className="comment-btn" onClick={addComment}>
-          💬 {post.comments.length}
+        <span
+          className="comment-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/posts/${post._id}`);
+          }}
+        >
+          <FaRegComment /> {post.comments.length}
         </span>
-        <span className="share-btn">↗️</span>
+        {user && String(user._id) === String(post.userId) && (
+          <span className="delete-btn" onClick={deletePost}>
+            <FiX />
+          </span>
+        )}
       </div>
     </article>
   );

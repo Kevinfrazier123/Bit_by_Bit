@@ -1,31 +1,49 @@
-// //Handles community forum posts, including creating, reading, updating, 
-// // and deleting scam reports or discussion posts.
-
-// import express from "express";
-
-// const router = express.Router();
-
-// router.get("/", (req, res) => {
-//     res.send("Hello thi is post endpoint");
-// });
-
-// export default router;
-
 // Backend/routes/posts.js
+// Handles community forum posts: create, read, like, comment, delete.
+
 import express from "express";
+import multer from "multer";
 import {
   createPost,
   toggleLike,
   addComment,
   getAllPosts,
+  getPost,
+  deletePost,
 } from "../controllers/post.js";
-import { verifyToken } from "../utils/verifyToken.js";   // already exists :contentReference[oaicite:2]{index=2}&#8203;:contentReference[oaicite:3]{index=3}
+import { verifyToken } from "../utils/verifyToken.js";
 
 const router = express.Router();
 
+// Multer setup: store uploads under /uploads with timestamped filenames
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) =>
+    cb(null, `${Date.now()}-${file.originalname}`),
+});
+const upload = multer({ storage });
+
+// GET all posts (requires login)
 router.get("/", verifyToken, getAllPosts);
-router.post("/", verifyToken, createPost);
+router.get("/:id", verifyToken, getPost);        
+// CREATE post (with optional image + attachment)
+router.post(
+  "/",
+  verifyToken,
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "attachment", maxCount: 1 },
+  ]),
+  createPost
+);
+
+// LIKE / UNLIKE a post
 router.put("/:id/like", verifyToken, toggleLike);
+
+// ADD a comment
 router.post("/:id/comment", verifyToken, addComment);
+
+// DELETE a post
+router.delete("/:id", verifyToken, deletePost);
 
 export default router;

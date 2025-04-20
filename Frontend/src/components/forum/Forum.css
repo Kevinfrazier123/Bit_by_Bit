@@ -161,5 +161,21 @@
     align-items: center;
     gap: 0.25rem;
   }
+
+  .forum-container {
+    display: flex;
+    flex-direction: row; /* two columns */
+    gap: 2rem;
+    padding: 1rem;
+  }
+  
+  .forum-main {
+    flex: 3;
+  }
+  
+  .forum-sidebar {
+    flex: 1;
+  }
+  
   
   

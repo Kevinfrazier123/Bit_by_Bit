@@ -9,6 +9,7 @@ import usersRoute from "./routes/users.js";
 import commentsRoute from "./routes/comments.js";
 import postsRoute from "./routes/posts.js";
 import cookieParser from "cookie-parser";
+import multer from "multer";
 
 dotenv.config();
 const app = express();
@@ -46,8 +47,14 @@ mongoose.connection.on("disconnected", () => {
   app.use("/users", usersRoute);
   app.use("/comments", commentsRoute);
   app.use("/posts", postsRoute);
-  
-  //app.use(/..., .....);
+  // serve /uploads as static
+  app.use("/uploads", express.static("uploads"));
+
+  // your CORS + cookieParser + json middleware…
+  app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+  app.use(cookieParser());
+  app.use(express.json());
+    //app.use(/..., .....);
   
 
 app.listen(8800, () => {
