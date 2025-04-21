@@ -1,0 +1,44 @@
+/* src/pages/search/SearchResults.css */
+.search-results-container {
+    padding: 2rem 1rem;
+  }
+  .search-prompt {
+    text-align: center;
+    margin-top: 2rem;
+  }
+  .back-btn {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 1rem;
+    cursor: pointer;
+    margin-bottom: 1rem;
+  }
+  .results-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+  .result-card {
+    background: var(--bg);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  .result-card h3 {
+    margin-top: 0;
+  }
+  .result-card button {
+    margin-top: 0.5rem;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .result-card button:hover {
+    background: var(--primary-dark);
+  }
+  

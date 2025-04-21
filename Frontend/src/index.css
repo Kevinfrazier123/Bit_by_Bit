@@ -11,3 +11,26 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+/* src/index.css (or App.css) */
+:root {
+  --bg: #ffffff;
+  --text: #333333;
+  --primary: #007bff;
+  --primary-dark: #0056b3;
+  --transition-speed: 0.3s;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  transition: background var(--transition-speed), color var(--transition-speed);
+}
+/* links, cards, etc. should use these vars: */
+a, .nav-item, button, .result-card {
+  transition: background var(--transition-speed), color var(--transition-speed);
+}
+body.dark {
+  --bg: #1e1e1e;
+  --text: #f0f0f0;
+  --primary: #4dabf7;
+  --primary-dark: #1c7ed6;
+}
