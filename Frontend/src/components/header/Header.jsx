@@ -1,74 +1,75 @@
-// Frontend/src/components/header/Header.jsx
-import React, { useContext } from "react";
+// src/components/header/Header.jsx
+import React, { useContext, useState, useEffect } from "react";
+import { NavLink, Link, useNavigate } from "react-router-dom";
+import { FaMoon, FaSun } from "react-icons/fa";
 import { AuthContext } from "../../context/AuthContext";
-import { Link, useNavigate } from "react-router-dom";
-import { FaHome } from "react-icons/fa";
 import "./Header.css";
 
 export default function Header() {
   const { user, dispatch } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  // Dark mode state
+  const [dark, setDark] = useState(
+    () => localStorage.getItem("theme") === "dark"
+  );
+
+  useEffect(() => {
+    document.body.classList.toggle("dark", dark);
+    localStorage.setItem("theme", dark ? "dark" : "light");
+  }, [dark]);
+
   const handleLogout = () => {
     dispatch({ type: "LOGOUT" });
     navigate("/login");
   };
 
+  const toggleTheme = () => setDark((d) => !d);
 
-  const handleCreate = () => {
-       if (user) navigate("/create-post");
-       else navigate("/login");
-     };
-
- 
+  const links = [
+    { to: "/", label: "Home" },
+    { to: "/forum", label: "Forum" },
+    { to: "/profile", label: "Profile" },
+  ];
 
   return (
     <header className="app-header">
-      <div className="header-left">
-        <Link to="/" className="home-link">
-          <FaHome className="home-icon" />
-        </Link>
-        <div className="logo">Scam Forum</div>
-      </div>
+      <Link to="/" className="logo">
+        ScamSafe
+      </Link>
 
-      <nav className="main-nav">
-        <Link to="/forum" className="nav-item">
-          Conversations
-        </Link>
-        <Link to="/help" className="nav-item">
-          Help Others
-        </Link>
-        <Link to="/categories" className="nav-item">
-          Categories
-        </Link>
-      </nav>
+      <nav className="nav-links" role="navigation" aria-label="Main navigation">
+        {links.map(({ to, label }) => (
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) =>
+              "nav-item" + (isActive ? " active" : "")
+            }
+          >
+            {label}
+          </NavLink>
+        ))}
 
-      <div className="header-controls">
-        <button className="btn create-post-btn" onClick={handleCreate}>
-          Create Post
+        {/* Dark mode toggle */}
+        <button
+          className="dark-toggle"
+          onClick={toggleTheme}
+          aria-label="Toggle dark mode"
+        >
+          {dark ? <FaSun /> : <FaMoon />}
         </button>
 
         {user ? (
-          <>
-            <img
-              src={user.profilePic || "/default-avatar.png"}
-              alt="avatar"
-              className="avatar"
-            />
-            <span className="username">{user.username}</span>
-            <button className="btn logout-btn" onClick={handleLogout}>
-              Logout
-            </button>
-          </>
-        ) : (
-          <button
-            className="btn login-btn"
-            onClick={() => navigate("/login")}
-          >
-            Log In
+          <button className="nav-item" onClick={handleLogout}>
+            Logout
           </button>
+        ) : (
+          <NavLink to="/login" className="nav-item">
+            Login
+          </NavLink>
         )}
-      </div>
+      </nav>
     </header>
   );
 }

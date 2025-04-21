@@ -1,73 +1,116 @@
-/* Centers the login box on the page */
+/* src/pages/login/Login.css */
+
+/* Full‑screen centered container */
 .loginPage {
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  
+  background: var(--bg);
+  color: var(--text);
+  transition: background var(--transition-speed), color var(--transition-speed);
+  position: relative;
+  overflow: hidden;
 }
+
+/* Animated background */
 .animatedBackground {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   background: url('../../components/Assests/matrix.gif') no-repeat center center;
-  background-size: 100%;
-  opacity: 10.0;
-  z-index: -1;
+  background-size: cover;
+  opacity: 0.1;
+  z-index: 0;
+}
+/* Force CSS variables to light values inside the loginPage */
+.loginPage {
+  --bg: #ffffff;
+  --text: #333333;
+  background: transparent !important;
+  color: var(--text);
 }
 
+/* Animated background stays behind */
+.animatedBackground {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: url('../../components/Assests/matrix.gif') no-repeat center center;
+  background-size: cover;
+  opacity: 0.1;
+  z-index: 0;
+}
 
-/* White box that contains the form */
+/* Form box uses the overridden vars */
 .loginBox {
-  background-color: #fff;
-  border: 1px solid #ddd;
+  position: relative;
+  z-index: 1;
+  background: var(--bg);
+  border: 1px solid #ccc;
   border-radius: 8px;
   width: 300px;
   padding: 24px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: background var(--transition-speed), border-color var(--transition-speed), color var(--transition-speed);
+}
+/* White/light or dark box for the form */
+.loginBox {
+  position: relative;
+  z-index: 1;
+  background: var(--bg);
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 300px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: background var(--transition-speed), border-color var(--transition-speed);
 }
 
 .loginBox h2 {
   margin-bottom: 16px;
   text-align: center;
   font-weight: 600;
-  display: inline-block;  
-  position: relative;     
+  position: relative;
 }
 
+/* Underline accent */
 .loginBox h2::after {
   content: "";
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: -5px;           
-  width: 50%;              
-  height: 2px;             
-  background-color: #33d433; 
+  bottom: -5px;
+  width: 50%;
+  height: 2px;
+  background-color: var(--primary);
 }
 
-/* Labels for Email and Password */
+/* Labels */
 .lLabel {
   margin: 8px 0 4px;
   font-weight: 500;
 }
 
-/* Input fields */
+/* Inputs */
 .lInput {
   height: 40px;
   padding: 0 10px;
   margin-bottom: 12px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--text);
   border-radius: 4px;
+  background: var(--bg);
+  color: var(--text);
+  transition: border-color var(--transition-speed), background var(--transition-speed), color var(--transition-speed);
 }
 
-/* Sign In button */
+/* Button */
 .signInButton {
-  background-color: #000; /* Black button */
+  background: var(--primary);
   color: #fff;
   padding: 10px;
   border: none;
@@ -75,6 +118,7 @@
   cursor: pointer;
   font-weight: bold;
   margin-top: 8px;
+  transition: background var(--transition-speed);
 }
 
 .signInButton:disabled {
@@ -82,36 +126,33 @@
   cursor: not-allowed;
 }
 
-/* Error message styling */
+.signInButton:hover:not(:disabled) {
+  background: var(--primary-dark);
+}
+
+/* Error message */
 .errorMessage {
-  color: red;
+  color: #ff6b6b;
   margin-top: 8px;
   font-size: 0.9rem;
   text-align: center;
 }
 
-/* Forgot password link */
-.forgotPassword {
-  margin-top: 16px;
-  text-align: left;
-}
-
-.forgotPassword a {
-  color: #000;
-  text-decoration: under;
-  font-size: 0.9rem;
-}
-
-/* Sign Up link at bottom */
+/* Links */
+.forgotPassword,
 .signUp {
   margin-top: 16px;
-  text-align: center;
-  font-size: 0.9rem;
 }
 
+.forgotPassword a,
 .signUp a {
-  color: #000;
+  color: var(--primary);
   text-decoration: none;
-  font-weight: 500;
-  margin-left: 4px;
+  font-size: 0.9rem;
+  transition: color var(--transition-speed);
+}
+
+.forgotPassword a:hover,
+.signUp a:hover {
+  color: var(--primary-dark);
 }
