@@ -3,10 +3,12 @@ import axios from "axios";
 import Header from "../header/Header";
 import Post from "./Post";
 import ActiveUsers from "../sidebar/ActiveUsers";
+import CreatePost from "./CreatePost";
 import "./Forum.css";
 
 export default function Forum() {
   const [posts, setPosts] = useState([]);
+  const [sortOption, setSortOption] = useState("newest");
 
   const fetchPosts = async () => {
     try {
@@ -21,6 +23,17 @@ export default function Forum() {
     fetchPosts();
   }, []);
 
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value);
+  };
+
+  const sortedPosts = [...posts].sort((a, b) => {
+    if (sortOption === "liked") {
+      return b.likes.length - a.likes.length;
+    }
+    return new Date(b.createdAt) - new Date(a.createdAt); // newest
+  });
+
   return (
     <>
       <Header />
@@ -32,8 +45,18 @@ export default function Forum() {
             <p>Share scams you've encountered and learn from others.</p>
           </header>
 
+          {/* Sort Dropdown */}
+          <div className="forum-sort">
+            <label htmlFor="sort">Sort by: </label>
+            <select id="sort" onChange={handleSortChange} value={sortOption}>
+              <option value="newest">Newest</option>
+              <option value="liked">Most Liked</option>
+            </select>
+          </div>
 
-          {posts.map((p) => (
+          <CreatePost onCreated={fetchPosts} />
+
+          {sortedPosts.map((p) => (
             <Post key={p._id} post={p} refresh={fetchPosts} />
           ))}
         </div>
