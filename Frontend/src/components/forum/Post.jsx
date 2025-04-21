@@ -38,6 +38,14 @@ export default function Post({ post, refresh }) {
         />
       )}
 
+      {/* Author and Time */}
+      <div className="post-meta">
+        <span className="post-author">Posted by @{post.username}</span>
+        <span className="post-time">
+          {new Date(post.createdAt).toLocaleString()}
+        </span>
+      </div>
+
       <div className="post-content">
         <p>{post.description}</p>
       </div>
