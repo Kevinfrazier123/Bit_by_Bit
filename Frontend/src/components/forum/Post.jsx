@@ -1,3 +1,4 @@
+// src/components/forum/Post.jsx
 import React, { useState, useContext } from "react";
 import { FaRegHeart, FaHeart, FaRegComment } from "react-icons/fa";
 import { FiX } from "react-icons/fi";
@@ -9,6 +10,7 @@ import "./Post.css";
 export default function Post({ post, refresh }) {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+
   const [liked, setLiked] = useState(post.likes.includes(user?._id));
   const [likeCount, setLikeCount] = useState(post.likes.length);
 
@@ -26,10 +28,24 @@ export default function Post({ post, refresh }) {
     refresh();
   };
 
+  // 1) split into words, take first 6
+  const words = post.description.split(/\s+/);
+  const needsTruncate = words.length > 6;
+  const preview = needsTruncate
+    ? words.slice(0, 6).join(" ")
+    : post.description;
+
   return (
     <article className="post" onClick={() => navigate(`/posts/${post._id}`)}>
-      <h3 className="post-title">{post.title}</h3>
+      {/* Badge + Title */}
+      <div className="post-header">
+        <span className={`post-type type-${post.scamType.toLowerCase()}`}>
+          {post.scamType}
+        </span>
+        <h3 className="post-title">{post.title}</h3>
+      </div>
 
+      {/* Image */}
       {post.image && (
         <img
           src={post.image}
@@ -38,7 +54,7 @@ export default function Post({ post, refresh }) {
         />
       )}
 
-      {/* Author and Time */}
+      {/* Author & Timestamp */}
       <div className="post-meta">
         <span className="post-author">Posted by @{post.username}</span>
         <span className="post-time">
@@ -46,21 +62,39 @@ export default function Post({ post, refresh }) {
         </span>
       </div>
 
+      {/* Truncated Description + See more */}
       <div className="post-content">
-        <p>{post.description}</p>
+        <p>
+          {preview}
+          {needsTruncate && (
+            <>
+              ...{" "}
+              <span
+                className="see-more"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/posts/${post._id}`);
+                }}
+              >
+                See more
+              </span>
+            </>
+          )}
+        </p>
       </div>
 
-      <div className="post-meta-row">
-        <span className={`post-type type-${post.scamType.toLowerCase()}`}>
-          {post.scamType}
-        </span>
-        {post.hashtags.length > 0 && (
-          <span className="post-hashtags">
-            {post.hashtags.map((h) => `#${h}`).join(" ")}
-          </span>
-        )}
-      </div>
+      {/* Hashtags */}
+      {post.hashtags.length > 0 && (
+        <div className="post-hashtags">
+          {post.hashtags.map((h) => (
+            <span key={h} className="hashtag">
+              #{h}
+            </span>
+          ))}
+        </div>
+      )}
 
+      {/* Interactions */}
       <div className="post-interactions">
         <span className="like-btn" onClick={toggleLike}>
           {liked ? <FaHeart color="red" /> : <FaRegHeart />} {likeCount}

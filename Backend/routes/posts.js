@@ -7,6 +7,7 @@ import {
   createPost,
   toggleLike,
   addComment,
+  addReply,
   getAllPosts,
   getPost,
   deletePost,
@@ -42,6 +43,7 @@ router.put("/:id/like", verifyToken, toggleLike);
 
 // ADD a comment
 router.post("/:id/comment", verifyToken, addComment);
+router.post("/:id/comment/:commentId/reply", verifyToken, addReply);
 
 // DELETE a post
 router.delete("/:id", verifyToken, deletePost);

@@ -1,3 +1,36 @@
+/* header holding badge + title */
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.post-type {
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+.type-phishing    { background-color: #ff7043; }
+.type-smishing    { background-color: #ab47bc; }
+.type-investment  { background-color: #42a5f5; }
+.type-romance     { background-color: #ec407a; }
+.type-tech‑support{ background-color: #26a69a; }
+.type-other       { background-color: #78909c; }
+
+.post-hashtags {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.post-title {
+  margin: 0;
+}
+
+
 .post {
   cursor: pointer;
   background: #fff;
@@ -38,25 +71,7 @@
   flex-wrap: wrap;
 }
 
-.post-type {
-  padding: 0.25rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: #fff;
-}
 
-.type-phishing    { background-color: #ff7043; }
-.type-smishing    { background-color: #ab47bc; }
-.type-investment  { background-color: #42a5f5; }
-.type-romance     { background-color: #ec407a; }
-.type-tech‑support{ background-color: #26a69a; }
-.type-other       { background-color: #78909c; }
-
-.post-hashtags {
-  font-size: 0.8rem;
-  color: #666;
-}
 
 .post-interactions {
   display: flex;
@@ -95,4 +110,14 @@
   color: #555;
   font-size: 0.8rem;
   margin-bottom: 0.25rem;
+}
+
+/* Add to src/components/forum/Post.css */
+.see-more {
+  color: #007bff;
+  cursor: pointer;
+  margin-left: 0.25rem;
+}
+.see-more:hover {
+  text-decoration: underline;
 }

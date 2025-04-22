@@ -4,7 +4,8 @@
     margin: 0 auto;
     padding: 20px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f7f7f7;
+    background-color: #dbdbdb59;
+    
   }
   
   /* Forum Header */
@@ -195,4 +196,5 @@
     font-size: 0.9rem;
     color: #555;
   }
+  
   

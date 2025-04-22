@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Header from "../header/Header";
 import Post from "./Post";
 import ActiveUsers from "../sidebar/ActiveUsers";
-import CreatePost from "./CreatePost";
+import { AuthContext } from "../../context/AuthContext";
 import "./Forum.css";
 
 export default function Forum() {
   const [posts, setPosts] = useState([]);
   const [sortOption, setSortOption] = useState("newest");
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const fetchPosts = async () => {
     try {
@@ -31,7 +34,7 @@ export default function Forum() {
     if (sortOption === "liked") {
       return b.likes.length - a.likes.length;
     }
-    return new Date(b.createdAt) - new Date(a.createdAt); // newest
+    return new Date(b.createdAt) - new Date(a.createdAt);
   });
 
   return (
@@ -43,6 +46,14 @@ export default function Forum() {
           <header className="forum-header">
             <h1>Scam Forum</h1>
             <p>Share scams you've encountered and learn from others.</p>
+             {user && (
+                <button
+                  className="create-post-btn"
+                  onClick={() => navigate("/create-post")}
+                >
+                  Create Post
+                </button>
+              )}
           </header>
 
           {/* Sort Dropdown */}
@@ -54,11 +65,12 @@ export default function Forum() {
             </select>
           </div>
 
-          <CreatePost onCreated={fetchPosts} />
-
-          {sortedPosts.map((p) => (
-            <Post key={p._id} post={p} refresh={fetchPosts} />
-          ))}
+          {/* Posts List */}
+          <div className="posts">
+            {sortedPosts.map((p) => (
+              <Post key={p._id} post={p} refresh={fetchPosts} />
+            ))}
+          </div>
         </div>
 
         <aside className="forum-sidebar">
