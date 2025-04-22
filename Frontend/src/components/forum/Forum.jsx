@@ -9,18 +9,25 @@ import "./Forum.css";
 export default function Forum() {
   const [posts, setPosts] = useState([]);
   const [sortOption, setSortOption] = useState("newest");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true); // 🟡 NEW: Loading state
 
   const fetchPosts = async () => {
     try {
+      setLoading(true); // Start loading
       const res = await axios.get("/posts");
       setPosts(res.data);
     } catch (err) {
       console.error("Fetch posts error:", err);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
   useEffect(() => {
     fetchPosts();
+    const interval = setInterval(fetchPosts, 120000); // ⏱️Auto update Every 2 minutes
+    return () => clearInterval(interval);
   }, []);
 
   const handleSortChange = (e) => {
@@ -31,13 +38,21 @@ export default function Forum() {
     if (sortOption === "liked") {
       return b.likes.length - a.likes.length;
     }
-    return new Date(b.createdAt) - new Date(a.createdAt); // newest
+    return new Date(b.createdAt) - new Date(a.createdAt);
   });
+
+  const filteredPosts = sortedPosts.filter((p) =>
+    p.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    p.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    p.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (p.hashtags || []).some((tag) =>
+      tag?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  );
 
   return (
     <>
       <Header />
-
       <div className="forum-container">
         <div className="forum-main">
           <header className="forum-header">
@@ -54,11 +69,28 @@ export default function Forum() {
             </select>
           </div>
 
-          <CreatePost onCreated={fetchPosts} />
+          {/* Search Bar */}
+          <div className="forum-search">
+            <input
+              type="text"
+              placeholder="Search scams, hashtags, or usernames..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
 
-          {sortedPosts.map((p) => (
-            <Post key={p._id} post={p} refresh={fetchPosts} />
-          ))}
+          
+
+          {/* Loading indicator */}
+          {loading ? (
+            <p className="loading-text">Loading posts...</p>
+          ) : filteredPosts.length > 0 ? (
+            filteredPosts.map((p) => (
+              <Post key={p._id} post={p} refresh={fetchPosts} />
+            ))
+          ) : (
+            <p>No posts found matching your search.</p>
+          )}
         </div>
 
         <aside className="forum-sidebar">

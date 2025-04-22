@@ -196,3 +196,29 @@
     color: #555;
   }
   
+  .forum-search {
+    margin-bottom: 1rem;
+  }
+  
+  .forum-search input {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    outline: none;
+  }
+  
+  .forum-search input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+  }
+  
+  .loading-text {
+    text-align: center;
+    font-style: italic;
+    color: #777;
+    padding: 1rem;
+  }
+  
+  

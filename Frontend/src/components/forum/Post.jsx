@@ -14,9 +14,23 @@ export default function Post({ post, refresh }) {
 
   const toggleLike = async (e) => {
     e.stopPropagation();
-    const { data } = await axios.put(`/posts/${post._id}/like`);
-    setLiked(!liked);
-    setLikeCount(data.likes);
+    try {
+      const token = localStorage.getItem("token");
+      const { data } = await axios.put(
+        `/posts/${post._id}/like`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setLiked(!liked);
+      setLikeCount(data.likes);
+    } catch (error) {
+      console.error("Error liking post:", error);
+      alert("An error occurred while liking the post.");
+    }
   };
 
   const deletePost = async (e) => {
@@ -40,7 +54,17 @@ export default function Post({ post, refresh }) {
 
       {/* Author and Time */}
       <div className="post-meta">
-        <span className="post-author">Posted by @{post.username}</span>
+        <span className="post-author">
+          Posted by @
+          <span
+            style={{
+              fontStyle: !post.username ? "italic" : "normal",
+              color: !post.username ? "#888" : "#000",
+            }}
+          >
+            {post.username || "unknown"}
+          </span>
+        </span>
         <span className="post-time">
           {new Date(post.createdAt).toLocaleString()}
         </span>
