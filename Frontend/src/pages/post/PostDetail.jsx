@@ -1,8 +1,7 @@
-// Frontend/src/pages/post/PostDetail.jsx
+// src/pages/post/PostDetail.jsx
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaRegHeart, FaHeart } from "react-icons/fa";
-import { FiX } from "react-icons/fi";
+import { FaRegHeart, FaHeart, FaTrash } from "react-icons/fa";
 import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 import "./PostDetail.css";
@@ -14,6 +13,8 @@ export default function PostDetail() {
 
   const [post, setPost] = useState(null);
   const [newComment, setNewComment] = useState("");
+  const [replyText, setReplyText] = useState("");
+  const [replyingCommentId, setReplyingCommentId] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -24,6 +25,12 @@ export default function PostDetail() {
 
   if (!post) return <p className="loading">Loading…</p>;
 
+  // Total comments includes replies
+  const totalComments = post.comments.reduce(
+    (sum, c) => sum + 1 + (c.replies?.length || 0),
+    0
+  );
+
   const toggleLike = async () => {
     const { data } = await axios.put(`/posts/${id}/like`);
     setPost((p) => ({ ...p, likes: data.likes }));
@@ -31,11 +38,46 @@ export default function PostDetail() {
 
   const submitComment = async () => {
     if (!newComment.trim()) return;
-    const { data } = await axios.post(`/posts/${id}/comment`, {
-      text: newComment.trim(),
-    });
+    const { data } = await axios.post(`/posts/${id}/comment`, { text: newComment.trim() });
     setPost((p) => ({ ...p, comments: [...p.comments, data] }));
     setNewComment("");
+  };
+
+  const deleteComment = async (commentId) => {
+    if (!window.confirm("Delete this comment?")) return;
+    await axios.delete(`/posts/${id}/comment/${commentId}`);
+    setPost((p) => ({ ...p, comments: p.comments.filter(c => c._id !== commentId) }));
+  };
+
+  const handleSubmitReply = async (commentId) => {
+    if (!replyText.trim()) return;
+    const { data } = await axios.post(
+      `/posts/${id}/comment/${commentId}/reply`,
+      { text: replyText.trim() }
+    );
+    setPost((p) => ({
+      ...p,
+      comments: p.comments.map((c) =>
+        c._id === commentId
+          ? { ...c, replies: [...(c.replies || []), data] }
+          : c
+      ),
+    }));
+    setReplyText("");
+    setReplyingCommentId(null);
+  };
+
+  const deleteReply = async (commentId, replyId) => {
+    if (!window.confirm("Delete this reply?")) return;
+    await axios.delete(`/posts/${id}/comment/${commentId}/reply/${replyId}`);
+    setPost((p) => ({
+      ...p,
+      comments: p.comments.map((c) =>
+        c._id === commentId
+          ? { ...c, replies: c.replies.filter(r => r._id !== replyId) }
+          : c
+      ),
+    }));
   };
 
   const deletePost = async () => {
@@ -44,9 +86,7 @@ export default function PostDetail() {
     navigate("/forum");
   };
 
-  const isAuthor =
-    user &&
-    String(user._id) === String(post.userId?._id ?? post.userId);
+  const isAuthor = user && String(user._id) === String(post.userId?._id ?? post.userId);
 
   return (
     <div className="detail-page">
@@ -55,13 +95,22 @@ export default function PostDetail() {
       </button>
 
       <div className="post-detail-card">
-        {/* delete “X” button */}
         {isAuthor && (
-          <span className="detail-delete-btn" onClick={deletePost}>
-            <FiX />
-          </span>
+          <FaTrash
+            className="detail-delete-btn"
+            onClick={deletePost}
+          />
         )}
 
+        {/* Header: badge + title */}
+        <div className="post-header">
+          <span className={`type-badge type-${post.scamType.toLowerCase()}`}>
+            {post.scamType}
+          </span>
+          <h1 className="detail-title">{post.title}</h1>
+        </div>
+
+        {/* Image */}
         {post.image && (
           <img
             src={post.image}
@@ -70,27 +119,20 @@ export default function PostDetail() {
           />
         )}
 
-        <div className="post-header">
-          <h2 className="detail-title">{post.description}</h2>
-          <span className={`type-badge type-${post.scamType.toLowerCase()}`}>
-            {post.scamType}
-          </span>
-        </div>
+        {/* Description */}
+        <p className="detail-desc">{post.description}</p>
 
+        {/* Likes */}
         <div className="likes">
           <button className="like-btn" onClick={toggleLike}>
-            {post.likes.includes(user._id) ? (
-              <FaHeart color="red" />
-            ) : (
-              <FaRegHeart />
-            )}{" "}
-            {post.likes.length}
+            {post.likes.includes(user._id) ? <FaHeart color="red" /> : <FaRegHeart />} {post.likes.length}
           </button>
         </div>
       </div>
 
+      {/* Comments & Replies */}
       <section className="comments-section">
-        <h3>Comments ({post.comments.length})</h3>
+        <h3>Comments ({totalComments})</h3>
         <div className="new-comment">
           <input
             value={newComment}
@@ -102,15 +144,71 @@ export default function PostDetail() {
           </button>
         </div>
         <ul className="comments-list">
-          {post.comments.map((c, i) => (
-            <li key={i} className="comment-item">
+          {post.comments.map((c) => (
+            <li
+              key={c._id}
+              className="comment-item"
+              onClick={(e) => {
+                e.stopPropagation();
+                setReplyingCommentId(c._id);
+                setReplyText("");
+              }}
+            >
               <div className="comment-text">{c.text}</div>
               <div className="comment-meta">
                 <span className="comment-author">{c.userId.username}</span>
                 <span className="comment-date">
                   {new Date(c.createdAt).toLocaleString()}
                 </span>
+                {/* Delete comment icon */}
+                {user && String(user._id) === String(c.userId) && (
+                  <FaTrash
+                    className="comment-delete-btn"
+                    onClick={() => deleteComment(c._id)}
+                  />
+                )}
               </div>
+
+              {/* Replies List */}
+              {c.replies && c.replies.length > 0 && (
+                <ul className="replies-list">
+                  {c.replies.map((r) => (
+                    <li
+                      key={r._id}
+                      className="reply-item"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setReplyingCommentId(c._id);
+                        setReplyText("@" + r.userId.username + " ");
+                      }}
+                    >
+                      <div className="reply-text">
+                        <span className="reply-author">@{r.userId.username}</span> {r.text}
+                        {/* Delete reply icon */}
+                        {user && String(user._id) === String(r.userId) && (
+                          <FaTrash
+                            className="reply-delete-btn"
+                            onClick={() => deleteReply(c._id, r._id)}
+                          />
+                        )}
+                      </div>
+                      <div className="reply-date">{new Date(r.createdAt).toLocaleString()}</div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {/* Reply form (on click of comment or reply) */}
+              {replyingCommentId === c._id && (
+                <div className="reply-form">
+                  <input
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    placeholder="Write a reply…"
+                  />
+                  <button onClick={() => handleSubmitReply(c._id)}>Send</button>
+                </div>
+              )}
             </li>
           ))}
         </ul>

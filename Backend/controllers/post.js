@@ -106,4 +106,31 @@ export const getPost = async (req, res, next) => {
   }
 };
 
+// REPLY to a comment
+export const addReply = async (req, res, next) => {
+  try {
+    const { commentId } = req.params;
+    const post = await Post.findById(req.params.id);
+    if (!post) return next(createError(404, "Post not found"));
+
+    // find the comment by its _id
+    const comment = post.comments.id(commentId);
+    if (!comment) return next(createError(404, "Comment not found"));
+
+    // push new reply
+    comment.replies.push({
+      userId: req.user.id,
+      text: req.body.text,
+    });
+
+    await post.save();
+    // return the newly added reply (last in array)
+    const newReply = comment.replies[comment.replies.length - 1];
+    res.status(201).json(newReply);
+  } catch (err) {
+    next(err);
+  }
+};
+
+
 

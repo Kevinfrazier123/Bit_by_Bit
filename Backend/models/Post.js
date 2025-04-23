@@ -36,6 +36,14 @@ const PostSchema = new mongoose.Schema(
         },
         text: String,
         createdAt: { type: Date, default: Date.now },
+        replies: [
+            {
+              userId: String,
+              text: String,
+              createdAt: { type: Date, default: Date.now },
+            }
+          ],
+
       },
     ],
     image: { type: String, default: null },
