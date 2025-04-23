@@ -23,7 +23,7 @@ export default function Profile() {
   const [secretSequence, setSecretSequence] = useState([]);
 
   const easterEggs = {
-    "↑↑↓↓←→←→ba": "🎉 Konami Mode Activated!",
+    "arrowuparrowuparrowdownarrowdownarrowleftarrowrightarrowleftarrowrightba": "🎉 Konami Mode Activated!",
     "dev": "👨‍💻 Developer Mode Unlocked!",
     "party": "🎊 Party Time!",
     "matrix": "🟢 Welcome to the Matrix...",
