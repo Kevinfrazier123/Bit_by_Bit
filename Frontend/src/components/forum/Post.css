@@ -121,3 +121,14 @@
 .see-more:hover {
   text-decoration: underline;
 }
+.risk-badge {
+  padding: 0.25em 0.5em;
+  border-radius: 0.25rem;
+  font-weight: bold;
+}
+.risk-1 { background: #d4edda; color: #155724; } /* green */
+.risk-2 { background: #fff3cd; color: #856404; } /* yellow */
+.risk-3 { background: #ffeeba; color: #856404; }
+.risk-4 { background: #f8d7da; color: #721c24; } /* pink */
+.risk-5 { background: #f5c6cb; color: #721c24; } /* red */
+

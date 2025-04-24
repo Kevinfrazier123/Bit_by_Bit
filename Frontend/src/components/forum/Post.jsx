@@ -1,4 +1,5 @@
 // src/components/forum/Post.jsx
+
 import React, { useState, useContext } from "react";
 import { FaRegHeart, FaHeart, FaRegComment } from "react-icons/fa";
 import { FiX } from "react-icons/fi";
@@ -28,21 +29,22 @@ export default function Post({ post, refresh }) {
     refresh();
   };
 
-  // 1) split into words, take first 6
+  // Truncate to first 6 words for preview
   const words = post.description.split(/\s+/);
   const needsTruncate = words.length > 6;
-  const preview = needsTruncate
-    ? words.slice(0, 6).join(" ")
-    : post.description;
+  const preview = needsTruncate ? words.slice(0, 6).join(" ") : post.description;
 
   return (
     <article className="post" onClick={() => navigate(`/posts/${post._id}`)}>
-      {/* Badge + Title */}
+      {/* Badge + Title + Risk */}
       <div className="post-header">
         <span className={`post-type type-${post.scamType.toLowerCase()}`}>
           {post.scamType}
         </span>
         <h3 className="post-title">{post.title}</h3>
+        <span className={`risk-badge risk-${post.riskLevel}`}>
+          Risk: {post.riskLevel}/5
+        </span>
       </div>
 
       {/* Image */}
@@ -115,5 +117,5 @@ export default function Post({ post, refresh }) {
         )}
       </div>
     </article>
-  );
+);
 }

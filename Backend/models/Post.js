@@ -48,8 +48,20 @@ const PostSchema = new mongoose.Schema(
     ],
     image: { type: String, default: null },
     attachment: { type: String, default: null },
+
+    // —— NEW RISK FIELDS —— 
+    riskLevel:  { type: Number, min: 1, max: 5, default: 1 },
+    riskScores: {
+      keywords:   { type: Number, default: 0 },
+      urls:       { type: Number, default: 0 },
+      moneyAsk:   { type: Number, default: 0 },
+      userTrust:  { type: Number, default: 0 },
+      feedback:   { type: Number, default: 0 },
+      sentiment:  { type: Number, default: 0 },
+    },
   },
   { timestamps: true }
+  
 );
 
 export default mongoose.model("Post", PostSchema);
