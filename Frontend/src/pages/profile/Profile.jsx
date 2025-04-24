@@ -5,6 +5,18 @@ import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
 import "./profile.css";
 
+// Import preset avatars
+import avatar1 from "../../components/Assests/avatars/avatar1.png";
+import avatar2 from "../../components/Assests/avatars/avatar2.png";
+import avatar3 from "../../components/Assests/avatars/avatar3.png";
+import avatar4 from "../../components/Assests/avatars/avatar4.png";
+import avatar5 from "../../components/Assests/avatars/avatar5.png";
+import avatar6 from "../../components/Assests/avatars/avatar6.png";
+import avatar7 from "../../components/Assests/avatars/avatar7.png";
+import avatar8 from "../../components/Assests/avatars/avatar8.png";
+import avatar9 from "../../components/Assests/avatars/avatar9.png";
+import avatar10 from "../../components/Assests/avatars/avatar10.png";
+
 export default function Profile() {
   const { user, dispatch } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -13,60 +25,41 @@ export default function Profile() {
     if (!user) navigate("/login");
   }, [user, navigate]);
 
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(user?.profilePic || "");
+  const [activeTab, setActiveTab] = useState("bio");
+  const [isEditingBio, setIsEditingBio] = useState(false);
   const [username, setUsername] = useState(user?.username || "");
+  const [bio, setBio] = useState(user?.bio || "");
+  const [file, setFile] = useState(null);
+  const [selectedPreset, setSelectedPreset] = useState("");
+  const [preview, setPreview] = useState(user?.profilePic || "");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [activeTab, setActiveTab] = useState("bio");
   const [showToast, setShowToast] = useState(false);
-  const [secretSequence, setSecretSequence] = useState([]);
 
-  const easterEggs = {
-    "arrowuparrowuparrowdownarrowdownarrowleftarrowrightarrowleftarrowrightba": "🎉 Konami Mode Activated!",
-    "dev": "👨‍💻 Developer Mode Unlocked!",
-    "party": "🎊 Party Time!",
-    "matrix": "🟢 Welcome to the Matrix...",
-    "hi": "👋 Hey there, user!"
-  };
+  const presets = [
+    avatar1, avatar2, avatar3, avatar4, avatar5,
+    avatar6, avatar7, avatar8, avatar9, avatar10
+  ];
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      const key = e.key.toLowerCase();
-      const updatedSequence = [...secretSequence, key].slice(-10);
-      setSecretSequence(updatedSequence);
-
-      const combined = updatedSequence.join("");
-      for (const [code, msg] of Object.entries(easterEggs)) {
-        if (combined.includes(code)) {
-          triggerEasterEgg(msg);
-          setSecretSequence([]);
-          break;
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [secretSequence]);
-
-  const triggerEasterEgg = (msg) => {
-    setMessage(msg);
-    setShowToast(true);
-    document.body.classList.add("shake");
-    setTimeout(() => {
-      document.body.classList.remove("shake");
-    }, 800);
-  };
-
+  // Preview uploaded file
   useEffect(() => {
     if (file) {
-      const objectUrl = URL.createObjectURL(file);
-      setPreview(objectUrl);
-      return () => URL.revokeObjectURL(objectUrl);
+      const url = URL.createObjectURL(file);
+      setPreview(url);
+      setSelectedPreset("");
+      return () => URL.revokeObjectURL(url);
     }
   }, [file]);
 
+  // Preview selected preset
+  useEffect(() => {
+    if (selectedPreset) {
+      setPreview(selectedPreset);
+      setFile(null);
+    }
+  }, [selectedPreset]);
+
+  // Auto-hide toasts
   useEffect(() => {
     if (message) {
       setShowToast(true);
@@ -75,94 +68,59 @@ export default function Profile() {
     }
   }, [message]);
 
-  const handleUpload = async () => {
-    if (!file) return;
+  // Reset preview when switching tabs without save
+  const handleTabClick = (tab) => {
+    if (activeTab === 'settings' && tab !== 'settings') {
+      setPreview(user?.profilePic || "");
+      setFile(null);
+      setSelectedPreset("");
+    }
+    if (activeTab === 'bio' && tab !== 'bio') {
+      setIsEditingBio(false);
+      setBio(user?.bio || "");
+    }
+    setActiveTab(tab);
+  };
+
+  // Commit changes
+  const handleSave = async () => {
     setLoading(true);
     try {
-      const form = new FormData();
-      form.append("image", file);
-      const res = await axios.put(`/users/${user._id}/profile-pic`, form, {
-        headers: { "Content-Type": "multipart/form-data" },
-        withCredentials: true,
-      });
-      dispatch({ type: "LOGIN_SUCCESS", payload: res.data });
-      setMessage("Profile picture updated!");
+      const updates = {};
+      if (activeTab === 'bio') {
+        if (bio !== user.bio) updates.bio = bio;
+      } else {
+        if (username !== user.username) updates.username = username;
+        if (selectedPreset) updates.profilePic = selectedPreset;
+      }
+      // Handle file upload
+      if (file) {
+        const form = new FormData();
+        form.append("image", file);
+        const resPic = await axios.put(
+          `/users/${user._id}/profile-pic`,
+          form,
+          { headers: { "Content-Type": "multipart/form-data" }, withCredentials: true }
+        );
+        dispatch({ type: "LOGIN_SUCCESS", payload: resPic.data });
+        delete updates.profilePic;
+      }
+      if (Object.keys(updates).length) {
+        const resUser = await axios.put(
+          `/users/${user._id}`,
+          updates,
+          { withCredentials: true }
+        );
+        dispatch({ type: "LOGIN_SUCCESS", payload: resUser.data });
+      }
+      if (activeTab === 'bio') setIsEditingBio(false);
+      setMessage("Changes saved!");
     } catch (err) {
       console.error(err);
-      setMessage("Upload failed.");
+      setMessage("Save failed.");
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleUsernameUpdate = async () => {
-    if (username === user?.username) return;
-    setLoading(true);
-    try {
-      const res = await axios.put(`/users/${user._id}`, { username }, { withCredentials: true });
-      dispatch({ type: "LOGIN_SUCCESS", payload: res.data });
-      setMessage("Username updated!");
-    } catch (err) {
-      console.error(err);
-      setMessage("Update failed.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case "bio":
-        return (
-          <div className="form-group fade-in">
-            <label>Bio</label>
-            <textarea
-              className="bio-textarea"
-              placeholder="Tell us a little about yourself..."
-              rows={3}
-              disabled
-              value="This is a sample bio. It can be edited once the backend is integrated. I really don’t want to touch the backend though. 😅 (knight)"
-            />
-          </div>
-        );
-      case "activity":
-        return <p className="tab-placeholder fade-in">You have 0 posts and 0 comments (coming soon).</p>;
-      case "settings":
-        return (
-          <div className="fade-in">
-            <div className="form-group">
-              <label htmlFor="username">Username <span className="edit-icon" title="Edit Username">✏️</span></label>
-              <input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-              <button onClick={handleUsernameUpdate} disabled={loading}>
-                {loading ? <div className="spinner" /> : "Update Username"}
-              </button>
-            </div>
-            <div className="form-group">
-              <label htmlFor="file">Profile Picture <span className="edit-icon" title="Change Picture">✏️</span></label>
-              <input
-                id="file"
-                type="file"
-                accept="image/*"
-                onChange={(e) => setFile(e.target.files[0])}
-              />
-              <button onClick={handleUpload} disabled={loading}>
-                {loading ? <div className="spinner" /> : "Upload Picture"}
-              </button>
-            </div>
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
-  const getInitials = (name) => {
-    return name ? name[0].toUpperCase() : "U";
   };
 
   if (!user) return null;
@@ -170,31 +128,111 @@ export default function Profile() {
   return (
     <div className="profile-container">
       <div className="profile-card">
+        {/* Enhanced welcome message styling */}
+        <h2 className="profile-welcome">
+          Welcome,
+          <span className="profile-username"> @{user.username}</span>
+        </h2>
         <div className="avatar-wrapper">
-          {preview ? (
-            <img src={preview} alt="avatar" className="avatar" />
-          ) : (
-            <div className="avatar initials">{getInitials(user.username)}</div>
-          )}
+          <img src={preview} alt="avatar" className="avatar" />
         </div>
-        <h2 className="profile-welcome">Welcome, @{user.username} 👋</h2>
 
         <div className="profile-tabs">
-          <button className={`profile-tab ${activeTab === "bio" ? "active" : ""}`} onClick={() => setActiveTab("bio")}>Bio</button>
-          <button className={`profile-tab ${activeTab === "activity" ? "active" : ""}`} onClick={() => setActiveTab("activity")}>Activity</button>
-          <button className={`profile-tab ${activeTab === "settings" ? "active" : ""}`} onClick={() => setActiveTab("settings")}>Settings</button>
+          {['bio', 'settings'].map(tab => (
+            <button
+              key={tab}
+              className={`profile-tab ${activeTab === tab ? 'active' : ''}`}
+              onClick={() => handleTabClick(tab)}
+            >
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
         </div>
 
-        <div className="profile-details">{renderTabContent()}</div>
+        <div className="profile-details">
+          {activeTab === 'bio' && (
+            <div className="bio-panel fade-in">
+              <label className="bio-label">Bio</label>
+              {!isEditingBio ? (
+                <div className="bio-display">
+                  <p className="bio-text">{user.bio || 'No bio set.'}</p>
+                  <button
+                    className="edit-bio-btn"
+                    onClick={() => setIsEditingBio(true)}
+                  >
+                    Edit Bio
+                  </button>
+                </div>
+              ) : (
+                <div className="bio-edit">
+                  <textarea
+                    className="bio-textarea"
+                    rows={4}
+                    value={bio}
+                    onChange={e => setBio(e.target.value)}
+                    disabled={loading}
+                  />
+                  <button
+                    className="save-bio-btn"
+                    onClick={handleSave}
+                    disabled={loading}
+                  >
+                    {loading ? 'Saving...' : 'Save'}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'settings' && (
+            <div className="settings-panel fade-in">
+              <div className="form-group">
+                <label>Username</label>
+                <input
+                  value={username}
+                  onChange={e => setUsername(e.target.value)}
+                  disabled={loading}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Upload Picture</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={e => setFile(e.target.files[0])}
+                  disabled={loading}
+                />
+              </div>
+
+              <div className="form-group presets-grid">
+                <label>Select an Avatar</label>
+                <div className="presets-container">
+                  {presets.map(url => (
+                    <img
+                      key={url}
+                      src={url}
+                      alt="avatar preset"
+                      className={`preset-img ${preview === url ? 'selected' : ''}`}
+                      onClick={() => setSelectedPreset(url)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <button
+                className="save-btn"
+                onClick={handleSave}
+                disabled={loading}
+              >
+                {loading ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {showToast && <div className="toast fade-in-fast">{message}</div>}
       </div>
-
-      {showToast && (
-        <div
-          className={`toast fade-in-fast ${Object.values(easterEggs).includes(message) ? "easter-egg" : ""}`}
-        >
-          {message}
-        </div>
-      )}
     </div>
   );
 }

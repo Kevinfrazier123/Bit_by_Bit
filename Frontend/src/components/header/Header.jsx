@@ -29,7 +29,6 @@ export default function Header() {
   const links = [
     { to: "/", label: "Home" },
     { to: "/forum", label: "Forum" },
-    { to: "/profile", label: "Profile" },
   ];
 
   return (
@@ -51,6 +50,32 @@ export default function Header() {
           </NavLink>
         ))}
 
+        {user ? (
+          <NavLink
+            to="/profile"
+            className={({ isActive }) =>
+              "nav-item profile-link" + (isActive ? " active" : "")
+            }
+            aria-label="Your profile"
+          >
+            {user.profilePic ? (
+              <img
+                src={user.profilePic}
+                alt={`${user.username}'s avatar`}
+                className="header-avatar"
+              />
+            ) : (
+              <span className="avatar-initials">
+                {user.username.charAt(0).toUpperCase()}
+              </span>
+            )}
+          </NavLink>
+        ) : (
+          <NavLink to="/login" className="nav-item">
+            Login
+          </NavLink>
+        )}
+
         {/* Dark mode toggle */}
         <button
           className="dark-toggle"
@@ -60,14 +85,10 @@ export default function Header() {
           {dark ? <FaSun /> : <FaMoon />}
         </button>
 
-        {user ? (
-          <button className="nav-item" onClick={handleLogout}>
+        {user && (
+          <button className="nav-item logout-btn" onClick={handleLogout}>
             Logout
           </button>
-        ) : (
-          <NavLink to="/login" className="nav-item">
-            Login
-          </NavLink>
         )}
       </nav>
     </header>

@@ -14,6 +14,7 @@ import Profile from "./pages/profile/Profile";
 import CreatePostPage from "./pages/create/CreatePostPage";
 import PostDetail from "./pages/post/PostDetail";
 import SearchResults from "./pages/search/SearchResults.jsx";
+import NewsFeed from "./pages/news/NewsFeed";
 
 export default function App() {
   return (
@@ -40,7 +41,7 @@ export default function App() {
           <Route path="/posts/:id" element={<PostDetail />} />
           <Route path="/search" element={<SearchResults />} />
           <Route path="/register" element={<Register />} />
-
+          <Route path="/news" element={<NewsFeed />} />
         </Route>
       </Routes>
     </BrowserRouter>
