@@ -1,4 +1,5 @@
 // src/components/forum/Post.jsx
+
 import React, { useState, useContext } from "react";
 import { FaRegHeart, FaHeart, FaRegComment } from "react-icons/fa";
 import { FiX } from "react-icons/fi";
@@ -16,23 +17,9 @@ export default function Post({ post, refresh }) {
 
   const toggleLike = async (e) => {
     e.stopPropagation();
-    try {
-      const token = localStorage.getItem("token");
-      const { data } = await axios.put(
-        `/posts/${post._id}/like`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setLiked(!liked);
-      setLikeCount(data.likes);
-    } catch (error) {
-      console.error("Error liking post:", error);
-      alert("An error occurred while liking the post.");
-    }
+    const { data } = await axios.put(`/posts/${post._id}/like`);
+    setLiked(!liked);
+    setLikeCount(data.likes);
   };
 
   const deletePost = async (e) => {
@@ -42,21 +29,22 @@ export default function Post({ post, refresh }) {
     refresh();
   };
 
-  // 1) split into words, take first 6
+  // Truncate to first 6 words for preview
   const words = post.description.split(/\s+/);
   const needsTruncate = words.length > 6;
-  const preview = needsTruncate
-    ? words.slice(0, 6).join(" ")
-    : post.description;
+  const preview = needsTruncate ? words.slice(0, 6).join(" ") : post.description;
 
   return (
     <article className="post" onClick={() => navigate(`/posts/${post._id}`)}>
-      {/* Badge + Title */}
+      {/* Badge + Title + Risk */}
       <div className="post-header">
         <span className={`post-type type-${post.scamType.toLowerCase()}`}>
           {post.scamType}
         </span>
         <h3 className="post-title">{post.title}</h3>
+        <span className={`risk-badge risk-${post.riskLevel}`}>
+          Risk: {post.riskLevel}/5
+        </span>
       </div>
 
       {/* Image */}
@@ -70,17 +58,7 @@ export default function Post({ post, refresh }) {
 
       {/* Author & Timestamp */}
       <div className="post-meta">
-        <span className="post-author">
-          Posted by @
-          <span
-            style={{
-              fontStyle: !post.username ? "italic" : "normal",
-              color: !post.username ? "#888" : "#000",
-            }}
-          >
-            {post.username || "unknown"}
-          </span>
-        </span>
+        <span className="post-author">Posted by @{post.username}</span>
         <span className="post-time">
           {new Date(post.createdAt).toLocaleString()}
         </span>
@@ -139,5 +117,5 @@ export default function Post({ post, refresh }) {
         )}
       </div>
     </article>
-  );
+);
 }

@@ -19,6 +19,9 @@ export const createPost = async (req, res, next) => {
       attachment: req.files?.attachment
         ? `/uploads/${req.files.attachment[0].filename}`
         : null,
+
+
+        
     });
 
     const saved = await newPost.save();
@@ -131,6 +134,3 @@ export const addReply = async (req, res, next) => {
     next(err);
   }
 };
-
-
-
