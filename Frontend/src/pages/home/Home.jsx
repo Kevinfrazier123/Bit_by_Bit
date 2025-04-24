@@ -26,7 +26,7 @@ export default function Home() {
 
   const onSearch = () => {
     if (query.trim()) {
-      navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+      navigate(`/news?q=${encodeURIComponent(query.trim())}`);
     }
   };
 
@@ -73,25 +73,22 @@ export default function Home() {
           </span>
 
           {/* Hero search bar */}
-          <div className="hero-search">
+          <div className="hero-search" role="search">
             <input
               type="text"
               placeholder="Search scam reports…"
               value={query}
               onChange={e => setQuery(e.target.value)}
               onKeyDown={e => e.key === "Enter" && onSearch()}
+              aria-label="Search cyber-attack news"
             />
-            <button onClick={onSearch}>🔍</button>
+            <button onClick={onSearch} aria-label="Submit search">🔍</button>
           </div>
 
           {/* Hero buttons */}
           <div className="hero-buttons">
-            <button className="about-btn" onClick={() => navigate("/about")}>
-              About Us
-            </button>
-            <button className="login-btn" onClick={() => navigate("/login")}>
-              Login
-            </button>
+            <button className="about-btn" onClick={() => navigate("/about")}>About Us</button>
+            <button className="login-btn" onClick={() => navigate("/login")}>Login</button>
           </div>
         </section>
 

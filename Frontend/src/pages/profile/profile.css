@@ -268,3 +268,38 @@ body.shake {
   80% { transform: translateX(5px); }
   100% { transform: translateX(0); }
 }
+/* src/pages/profile/profile.css */
+
+.presets-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.preset-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.preset-img.selected {
+  border-color: #007bff;
+}
+.profile-welcome {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.profile-username {
+  font-family: 'Roboto Mono', monospace;
+  color: #007bff;
+  margin-left: 0.25rem;
+}
