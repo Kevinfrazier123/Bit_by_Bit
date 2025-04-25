@@ -25,11 +25,11 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// GET all posts (requires login)
-router.get("/", verifyToken, getAllPosts);
-router.get("/:id", verifyToken, getPost);
+// PUBLIC ROUTES: anyone can view posts
+router.get("/", getAllPosts);
+router.get("/:id", getPost);
 
-// CREATE post (with optional image + attachment)
+// CREATE post (requires login, with optional image + attachment)
 // — before calling createPost, compute riskLevel & riskScores and attach to req.body
 router.post(
   "/",
@@ -54,11 +54,7 @@ router.post(
         feedbackMeta,
       });
 
-
-      req.body.riskLevel  = riskLevel;
-      req.body.riskScores = riskScores;
-      
-      // 4. Attach to req.body for controller
+      // 4. Attach risk data to req.body for controller
       req.body.riskLevel  = riskLevel;
       req.body.riskScores = riskScores;
       next();
@@ -69,14 +65,14 @@ router.post(
   createPost
 );
 
-// LIKE / UNLIKE a post
+// LIKE / UNLIKE a post (requires login)
 router.put("/:id/like", verifyToken, toggleLike);
 
-// ADD a comment
-router.post("/:id/comment",                       verifyToken, addComment);
-router.post("/:id/comment/:commentId/reply",      verifyToken, addReply);
+// ADD a comment (requires login)
+router.post("/:id/comment", verifyToken, addComment);
+router.post("/:id/comment/:commentId/reply", verifyToken, addReply);
 
-// DELETE a post
+// DELETE a post (requires login)
 router.delete("/:id", verifyToken, deletePost);
 
 export default router;

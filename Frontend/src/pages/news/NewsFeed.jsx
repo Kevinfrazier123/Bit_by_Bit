@@ -13,29 +13,39 @@ export default function NewsFeed() {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
 
-  const [articles, setArticles]     = useState([]);
-  const [page, setPage]             = useState(1);
-  const [hasMore, setHasMore]       = useState(true);
-  const [loading, setLoading]       = useState(true);
-  const [error, setError]           = useState(null);
+  const [articles, setArticles] = useState([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState(params.get("q") || "");
 
   // Fetch one page of articles
-  const loadArticles = () => {
-    fetchCyberAttackNews(page)
-      .then(res => {
-        const newArts = res.data.articles || [];
-        setArticles(prev => [...prev, ...newArts]);
-        setHasMore(newArts.length > 0);
-        setPage(prev => prev + 1);
-      })
-      .catch(err => setError(err))
-      .finally(() => setLoading(false));
+  const loadArticles = async () => {
+    console.log("Fetching articles page", page);
+    setLoading(true);
+    try {
+      const res = await fetchCyberAttackNews(page);
+      console.log("API returned:", res.data);
+      const data = res.data;
+      const newArts = Array.isArray(data)
+        ? data
+        : data.articles || [];
+      setArticles(prev => [...prev, ...newArts]);
+      setHasMore(newArts.length > 0);
+      setPage(prev => prev + 1);
+    } catch (err) {
+      console.error("Error fetching news:", err);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Initial load
   useEffect(() => {
     loadArticles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Filtered list
@@ -44,8 +54,8 @@ export default function NewsFeed() {
     a.source.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Show skeleton on first load
-  if (loading && page === 1) {
+  // Show skeleton on initial load
+  if (loading && articles.length === 0) {
     return (
       <div className="articles-grid">
         {Array.from({ length: 6 }).map((_, i) => (
