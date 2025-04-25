@@ -1,4 +1,3 @@
-// src/pages/profile/Profile.jsx
 import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -35,13 +34,45 @@ export default function Profile() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [secretSequence, setSecretSequence] = useState([]);
 
-  const presets = [
-    avatar1, avatar2, avatar3, avatar4, avatar5,
-    avatar6, avatar7, avatar8, avatar9, avatar10
-  ];
+  const presets = [avatar1, avatar2, avatar3, avatar4, avatar5, avatar6, avatar7, avatar8, avatar9, avatar10];
 
-  // Preview uploaded file
+  const easterEggs = {
+    "arrowuparrowuparrowdownarrowdownarrowleftarrowrightarrowleftarrowrightba": "🎉 Konami Mode Activated!",
+    "dev": "👨‍💻 Developer Mode Unlocked!",
+    "party": "🎊 Party Time!",
+    "matrix": "🟢 Welcome to the Matrix...",
+    "hi": "👋 Hey there, user!"
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      const updated = [...secretSequence, e.key.toLowerCase()].slice(-40);
+      setSecretSequence(updated);
+      const combined = updated.join("");
+      for (const [code, msg] of Object.entries(easterEggs)) {
+        if (combined.includes(code)) {
+          triggerEasterEgg(msg);
+          setSecretSequence([]);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [secretSequence]);
+
+  const triggerEasterEgg = (msg) => {
+    setMessage(msg);
+    setShowToast(true);
+    document.body.classList.add("shake");
+    setTimeout(() => {
+      document.body.classList.remove("shake");
+    }, 800);
+  };
+
   useEffect(() => {
     if (file) {
       const url = URL.createObjectURL(file);
@@ -51,7 +82,6 @@ export default function Profile() {
     }
   }, [file]);
 
-  // Preview selected preset
   useEffect(() => {
     if (selectedPreset) {
       setPreview(selectedPreset);
@@ -59,7 +89,6 @@ export default function Profile() {
     }
   }, [selectedPreset]);
 
-  // Auto-hide toasts
   useEffect(() => {
     if (message) {
       setShowToast(true);
@@ -68,7 +97,6 @@ export default function Profile() {
     }
   }, [message]);
 
-  // Reset preview when switching tabs without save
   const handleTabClick = (tab) => {
     if (activeTab === 'settings' && tab !== 'settings') {
       setPreview(user?.profilePic || "");
@@ -82,7 +110,6 @@ export default function Profile() {
     setActiveTab(tab);
   };
 
-  // Commit changes
   const handleSave = async () => {
     setLoading(true);
     try {
@@ -93,7 +120,6 @@ export default function Profile() {
         if (username !== user.username) updates.username = username;
         if (selectedPreset) updates.profilePic = selectedPreset;
       }
-      // Handle file upload
       if (file) {
         const form = new FormData();
         form.append("image", file);
@@ -106,11 +132,7 @@ export default function Profile() {
         delete updates.profilePic;
       }
       if (Object.keys(updates).length) {
-        const resUser = await axios.put(
-          `/users/${user._id}`,
-          updates,
-          { withCredentials: true }
-        );
+        const resUser = await axios.put(`/users/${user._id}`, updates, { withCredentials: true });
         dispatch({ type: "LOGIN_SUCCESS", payload: resUser.data });
       }
       if (activeTab === 'bio') setIsEditingBio(false);
@@ -128,11 +150,7 @@ export default function Profile() {
   return (
     <div className="profile-container">
       <div className="profile-card">
-        {/* Enhanced welcome message styling */}
-        <h2 className="profile-welcome">
-          Welcome,
-          <span className="profile-username"> @{user.username}</span>
-        </h2>
+        <h2 className="profile-welcome">Welcome,<span className="profile-username"> @{user.username}</span></h2>
         <div className="avatar-wrapper">
           <img src={preview} alt="avatar" className="avatar" />
         </div>
@@ -156,12 +174,7 @@ export default function Profile() {
               {!isEditingBio ? (
                 <div className="bio-display">
                   <p className="bio-text">{user.bio || 'No bio set.'}</p>
-                  <button
-                    className="edit-bio-btn"
-                    onClick={() => setIsEditingBio(true)}
-                  >
-                    Edit Bio
-                  </button>
+                  <button className="edit-bio-btn" onClick={() => setIsEditingBio(true)}>Edit Bio</button>
                 </div>
               ) : (
                 <div className="bio-edit">
@@ -188,23 +201,12 @@ export default function Profile() {
             <div className="settings-panel fade-in">
               <div className="form-group">
                 <label>Username</label>
-                <input
-                  value={username}
-                  onChange={e => setUsername(e.target.value)}
-                  disabled={loading}
-                />
+                <input value={username} onChange={e => setUsername(e.target.value)} disabled={loading} />
               </div>
-
               <div className="form-group">
                 <label>Upload Picture</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={e => setFile(e.target.files[0])}
-                  disabled={loading}
-                />
+                <input type="file" accept="image/*" onChange={e => setFile(e.target.files[0])} disabled={loading} />
               </div>
-
               <div className="form-group presets-grid">
                 <label>Select an Avatar</label>
                 <div className="presets-container">
@@ -219,19 +221,18 @@ export default function Profile() {
                   ))}
                 </div>
               </div>
-
-              <button
-                className="save-btn"
-                onClick={handleSave}
-                disabled={loading}
-              >
+              <button className="save-btn" onClick={handleSave} disabled={loading}>
                 {loading ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
           )}
         </div>
 
-        {showToast && <div className="toast fade-in-fast">{message}</div>}
+        {showToast && (
+          <div className={`toast fade-in-fast ${Object.values(easterEggs).includes(message) ? "easter-egg" : ""}`}>
+            {message}
+          </div>
+        )}
       </div>
     </div>
   );
